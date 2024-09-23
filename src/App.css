@@ -101,17 +101,17 @@ header {
   color: #8a8a8a;
 }
 
-/* Circular Checkbox Styling */
+/* Checkbox Styling (changed to a small box) */
 .custom-checkbox {
-  width: 15px;
-  height: 15px;
+  width: 24px; /* Fixed width */
+  height: 24px; /* Fixed height */
   border: 2px solid #4caf50;
-  border-radius: 50%;
+  border-radius: 2px; /* Change to square shape */
   display: inline-block;
   transition: background-color 0.3s, border-color 0.3s, transform 0.3s; 
   cursor: pointer;
   position: relative;
-  margin-right: 10px; /* Add space between checkbox and text */
+  margin-right: 10px; /* Space between checkbox and text */
 }
 
 .custom-checkbox.checked {
@@ -121,17 +121,17 @@ header {
 }
 
 .custom-checkbox i {
-  color: #4caf50;
-  font-size: 16px;
-  line-height: 20px;
+  color: white; /* Change icon color for contrast */
+  font-size: 16px; /* Adjust icon size as needed */
   position: absolute;
-  top: 0;
-  left: 0;
-  display: none;
+  top: 50%; /* Center the icon vertically */
+  left: 50%; /* Center the icon horizontally */
+  transform: translate(-50%, -50%); /* Adjust positioning */
+  display: none; /* Hide by default */
 }
 
 .custom-checkbox.checked i {
-  display: block;
+  display: block; /* Show when checked */
 }
 
 /* Task Completion Styling */
@@ -154,7 +154,7 @@ header {
 }
 
 .add-task:hover {
-  background-color: #4caf50; /* Lighter green on hover */
+  background-color: #45a049; /* Lighter green on hover */
   animation: bounce 0.3s ease-in-out;
 }
 
@@ -205,6 +205,46 @@ header {
 .empty-message:hover {
   background-color: #4caf50; /* Lighter green on hover */
   transform: scale(1.02); /* Slight scaling effect */
+}
+
+/* Button Styling */
+button {
+  padding: 5px 10px;
+  margin-left: 10px;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Plus Button for Adding Task */
+.add-task-button {
+  display: flex; /* Enable flexbox */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  width: 50px; /* Set width */
+  height: 50px; /* Set height equal to width for circle */
+  background-color: #4caf50;
+  color: white;
+  border-radius: 50%; /* Perfect circle */
+  text-align: center;
+  font-size: 24px;
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.3s;
+  position: absolute; /* Position it absolutely */
+  bottom: 20px; /* Adjust as needed */
+  right: 20px; /* Adjust as needed */
+}
+
+.add-task-button:hover {
+  background-color: #45a049;
+  transform: scale(1.1); /* Slight scaling effect on hover */
 }
 
 /* Animations */

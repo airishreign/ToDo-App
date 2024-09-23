@@ -3,25 +3,29 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './App.css';
 
 function App() {
-  const [tasks, setTasks] = useState([
-    { name: 'ITProma Homework', dueDate: '2024-09-25', dueTime: '1:30 PM', completed: false },
-    { name: 'AppDev', dueDate: '2024-09-25', dueTime: '7:30 AM', completed: false },
-    { name: 'Conchri Presentation', dueDate: '2024-09-24', dueTime: '', completed: false },
-    { name: 'Methore Questionnaire', dueDate: '2024-09-25', dueTime: '', completed: false },
-  ]);
+  const [tasks, setTasks] = useState([]);
 
-  const [completedTasks, setCompletedTasks] = useState([]);
-
-  const toggleCompletion = (index) => {
-    const taskToComplete = tasks[index];
-    setCompletedTasks([...completedTasks, { ...taskToComplete, completed: true }]);
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
+  const toggleCompletion = (id) => {
+    setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
   };
 
-  const deleteTask = (index) => {
-    const updatedTasks = completedTasks.filter((_, i) => i !== index);
-    setCompletedTasks(updatedTasks);
+  const deleteTask = (id) => {
+    setTasks(tasks.filter(task => task.id !== id));
+  };
+
+  const addTask = (name, dueDate, dueTime) => {
+    const newTask = { id: Date.now(), name, dueDate: dueDate || 'No due date', dueTime, completed: false, editing: false };
+    setTasks([...tasks, newTask]);
+  };
+
+  const editTask = (id) => {
+    setTasks(tasks.map(task => task.id === id ? { ...task, editing: true } : task));
+  };
+
+  const saveTask = (id, newName, newDueDate, newDueTime) => {
+    setTasks(tasks.map(task =>
+      task.id === id ? { ...task, name: newName, dueDate: newDueDate, dueTime: newDueTime, editing: false } : task
+    ));
   };
 
   return (
@@ -39,11 +43,12 @@ function App() {
           </div>
           <div className="content">
             <Routes>
-              <Route path="/" element={<ToDo tasks={tasks} toggleCompletion={toggleCompletion} />} />
-              <Route path="/task" element={<Task tasks={tasks} setTasks={setTasks} />} />
-              <Route path="/completed-tasks" element={<CompletedTasks completedTasks={completedTasks} deleteTask={deleteTask} />} />
+              <Route path="/" element={<ToDo tasks={tasks} toggleCompletion={toggleCompletion} editTask={editTask} saveTask={saveTask} deleteTask={deleteTask} />} />
+              <Route path="/task" element={<Task addTask={addTask} />} />
+              <Route path="/completed-tasks" element={<CompletedTasks completedTasks={tasks.filter(task => task.completed)} deleteTask={deleteTask} />} />
               <Route path="/due-date" element={<DueDate tasks={tasks} />} />
             </Routes>
+            <Link to="/task" className="add-task-button">+</Link>
           </div>
         </header>
       </div>
@@ -51,27 +56,41 @@ function App() {
   );
 }
 
-function ToDo({ tasks, toggleCompletion }) {
+function ToDo({ tasks, toggleCompletion, editTask, saveTask, deleteTask }) {
   return (
     <div>
       <h1>To-Do List</h1>
       {tasks.length === 0 ? (
-        <div className="empty-message" onClick={() => alert("Take a rest!")}>
-          <p>Congratulations! There's nothing to do. Go relax!</p>
+        <div className="empty-message">
+          <p>No todos available. Add a todo to get started!</p>
         </div>
       ) : (
         <ul className="task-list">
-          {tasks.sort((a, b) => new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) - new Date(`${b.dueDate}T${b.dueTime || '00:00'}`))
-                .map((task, index) => (
-            <li key={index}>
+          {tasks.map((task) => (
+            <li key={task.id} className={task.completed ? 'completed' : ''}>
               <div
                 className={`custom-checkbox ${task.completed ? 'checked' : ''}`}
-                onClick={() => toggleCompletion(index)}
+                onClick={() => toggleCompletion(task.id)}
               >
                 {task.completed && <i className="fas fa-check"></i>}
               </div>
-              <span>{task.name}</span>
+              {task.editing ? (
+                <input
+                  type="text"
+                  defaultValue={task.name}
+                  onBlur={(e) => saveTask(task.id, e.target.value, task.dueDate, task.dueTime)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      saveTask(task.id, e.target.value, task.dueDate, task.dueTime);
+                    }
+                  }}
+                />
+              ) : (
+                <span>{task.name}</span>
+              )}
               <p>Due Date: {task.dueDate} {task.dueTime && `at ${task.dueTime}`}</p>
+              <button onClick={() => editTask(task.id)} disabled={task.completed || task.editing}>Edit</button>
+              <button onClick={() => deleteTask(task.id)} disabled={task.completed || task.editing}>Remove</button>
             </li>
           ))}
         </ul>
@@ -80,14 +99,14 @@ function ToDo({ tasks, toggleCompletion }) {
   );
 }
 
-function Task({ tasks, setTasks }) {
+function Task({ addTask }) {
   const [newTask, setNewTask] = useState('');
   const [newDueDate, setNewDueDate] = useState('');
   const [newDueTime, setNewDueTime] = useState('');
 
-  const addTask = () => {
+  const handleAddTask = () => {
     if (newTask.trim()) {
-      setTasks([...tasks, { name: newTask, dueDate: newDueDate || 'No due date', dueTime: newDueTime, completed: false }]);
+      addTask(newTask, newDueDate, newDueTime);
       setNewTask('');
       setNewDueDate('');
       setNewDueTime('');
@@ -114,17 +133,8 @@ function Task({ tasks, setTasks }) {
           value={newDueTime}
           onChange={(e) => setNewDueTime(e.target.value)}
         />
-        <button className="add-task" onClick={addTask}>Add Task</button>
+        <button className="add-task" onClick={handleAddTask}>Add Task</button>
       </div>
-      <ul className="task-list">
-        {tasks.sort((a, b) => new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) - new Date(`${b.dueDate}T${b.dueTime || '00:00'}`))
-              .map((task, index) => (
-          <li key={index}>
-            <span>{task.name}</span>
-            <p>Due Date: {task.dueDate} {task.dueTime && `at ${task.dueTime}`}</p>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -134,19 +144,18 @@ function CompletedTasks({ completedTasks, deleteTask }) {
     <div>
       <h1>Completed Tasks</h1>
       {completedTasks.length === 0 ? (
-        <div className="empty-message" onClick={() => alert("Take the first step, you’ve got this!")}>
-          <p>Take the first step, you’ve got this!</p>
+        <div className="empty-message">
+          <p>No completed tasks!</p>
         </div>
       ) : (
         <ul className="task-list">
-          {completedTasks.sort((a, b) => new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) - new Date(`${b.dueDate}T${b.dueTime || '00:00'}`))
-                .map((task, index) => (
-          <li key={index}>
-            <span>{task.name}</span>
-            <p>Due Date: {task.dueDate} {task.dueTime && `at ${task.dueTime}`}</p>
-            <button className="delete-task" onClick={() => deleteTask(index)}>Delete</button>
-          </li>
-        ))}
+          {completedTasks.map((task) => (
+            <li key={task.id}>
+              <span>{task.name}</span>
+              <p>Due Date: {task.dueDate} {task.dueTime && `at ${task.dueTime}`}</p>
+              <button className="delete-task" onClick={() => deleteTask(task.id)}>Delete</button>
+            </li>
+          ))}
         </ul>
       )}
     </div>
@@ -158,8 +167,8 @@ function DueDate({ tasks }) {
     <div>
       <h1>Tasks by Due Date</h1>
       <ul className="task-list">
-        {tasks.sort((a, b) => new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) - new Date(`${b.dueDate}T${b.dueTime || '00:00'}`)).map((task, index) => (
-          <li key={index}>
+        {tasks.sort((a, b) => new Date(`${a.dueDate}T${a.dueTime || '00:00'}`) - new Date(`${b.dueDate}T${b.dueTime || '00:00'}`)).map((task) => (
+          <li key={task.id}>
             <span>{task.name}</span>
             <p>Due Date: {task.dueDate} {task.dueTime && `at ${task.dueTime}`}</p>
           </li>
