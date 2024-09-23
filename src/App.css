@@ -1,38 +1,233 @@
+/* General Layout */
 .App {
-  text-align: center;
+  display: flex;
+  height: 100vh;
+  background-color: #1a1a1a;
+  background-image: linear-gradient(135deg, #1a1a1a 50%, #2e2e2e 50%);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+header {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Sidebar Styling */
+.sidebar {
+  background-color: #212121;
+  width: 250px;
+  padding: 20px;
+  color: #e0e0e0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.sidebar h2 {
+  margin: 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #4caf50;
+  color: #4caf50;
+  font-family: 'Arial', sans-serif;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.sidebar li {
+  padding: 10px 0;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.3s;
+}
+
+.sidebar li:hover,
+.sidebar a:hover {
+  color: #4caf50; /* Lighter green on hover */
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Main Content Styling */
+.content {
+  flex: 1;
+  padding: 40px;
+  background-color: #2e2e2e;
+  color: #4caf50;
+  margin-left: 270px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Task List Styling */
+.task-list {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center vertically */
+  position: relative;
+  padding: 10px;
+  background-color: #393939;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s, transform 0.3s; /* Add transform for animation */
+}
+
+.task-list li:hover {
+  background-color: #4a4a4a;
+  transform: scale(1.02); /* Slight scaling effect on hover */
+}
+
+.task-list span {
+  font-size: 18px;
+  color: #e0e0e0;
+  flex: 1; /* Take remaining space */
+}
+
+.task-list p {
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+/* Circular Checkbox Styling */
+.custom-checkbox {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #4caf50;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.3s; 
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px; /* Add space between checkbox and text */
+}
+
+.custom-checkbox.checked {
+  background-color: #4caf50;
+  border-color: green;
+  animation: pulse 0.5s ease-in-out; /* Animation */
+}
+
+.custom-checkbox i {
+  color: #4caf50;
+  font-size: 16px;
+  line-height: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+}
+
+.custom-checkbox.checked i {
+  display: block;
+}
+
+/* Task Completion Styling */
+.task-list li.completed {
+  text-decoration: line-through;
+  color: #4caf50;
+}
+
+/* Add Task Button */
+.add-task {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.add-task:hover {
+  background-color: #4caf50; /* Lighter green on hover */
+  animation: bounce 0.3s ease-in-out;
+}
+
+/* New Task Input Styling */
+.new-task {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.new-task input {
+  padding: 10px;
+  margin: 5px 0;
+  width: 300px;
+  border: 1px solid #4caf50;
+  border-radius: 5px;
+  background-color: #333;
+  color: #e0e0e0;
+  transition: border-color 0.3s;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.new-task input:focus {
+  border-color: #4caf50;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4caf50;
+  border-radius: 10px;
+}
+
+/* Empty Message Styling */
+.empty-message {
+  padding: 20px;
+  background-color: #393939;
+  border-radius: 5px;
+  color: #e0e0e0;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; /* Add transform for animation */
+}
+
+.empty-message:hover {
+  background-color: #4caf50; /* Lighter green on hover */
+  transform: scale(1.02); /* Slight scaling effect */
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
